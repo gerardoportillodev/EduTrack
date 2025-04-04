@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados del Examen - EDUTrack{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Resultados del Examen</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title">Materia: {{ exam.subject.capitalize() }}</h5>
+                            <p class="card-text">Fecha: {{ exam.timestamp.strftime('%d/%m/%Y %H:%M') }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="d-flex justify-content-end align-items-center h-100">
+                                <div class="text-center me-4">
+                                    <span class="d-block fs-4 text-success">{{ correct_count }}</span>
+                                    <span class="text-muted">Correctas</span>
+                                </div>
+                                <div class="text-center">
+                                    <span class="d-block fs-4 text-danger">{{ incorrect_count }}</span>
+                                    <span class="text-muted">Incorrectas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress mt-3" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ (correct_count/(correct_count+incorrect_count))*100 }}%" 
+                             aria-valuenow="{{ correct_count }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="{{ correct_count+incorrect_count }}">
+                            {{ "%.1f"|format((correct_count/(correct_count+incorrect_count))*100) }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion" id="answersAccordion">
+                {% for item in answers %}
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button {% if not item.is_correct %}bg-light-danger{% endif %}" 
+                                type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapse{{ loop.index }}" 
+                                aria-expanded="true" 
+                                aria-controls="collapse{{ loop.index }}">
+                            Pregunta {{ loop.index }} - 
+                            <span class="ms-2 badge bg-{% if item.is_correct %}success{% else %}danger{% endif %}">
+                                {% if item.is_correct %}Correcta{% else %}Incorrecta{% endif %}
+                            </span>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" 
+                         class="accordion-collapse collapse show" 
+                         aria-labelledby="heading{{ loop.index }}" 
+                         data-bs-parent="#answersAccordion">
+                        <div class="accordion-body">
+                            <h5 class="mb-3">{{ item.question_text }}</h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="card {% if item.is_correct %}border-success{% else %}border-danger{% endif %}">
+                                        <div class="card-header bg-light">
+                                            Tu respuesta
+                                        </div>
+                                        <div class="card-body">
+      
+                                            {% if not item.is_correct %}
+                                            <p class="mb-0 text-danger">
+                                                <i class="bi bi-x-circle-fill"></i> Incorrecta
+                                            </p>
+                                            {% else %}
+                                            <p class="mb-0 text-success">
+                                                <i class="bi bi-check-circle-fill"></i> Correcta
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if not item.is_correct %}
+                                <div class="col-md-6">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-light">
+                                            Respuesta correcta
+                                        </div>
+                                        <div class="card-body">
+
+                                            <p class="mb-0 text-success">
+                                                <i class="bi bi-check-circle-fill"></i> Esta era la respuesta correcta
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
+                                <h6 class="alert-heading">Feedback:</h6>
+                                <p class="mb-0">{{ item.feedback }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary me-md-2">
+                    <i class="bi bi-house-door"></i> Volver al Dashboard
+                </a>
+                <a href="{{ url_for('main.select_subject') }}" class="btn btn-success">
+                    <i class="bi bi-journal-text"></i> Realizar otro examen
+                </a>
+            </div>
+        </div>
+</div>
+{% endblock %}

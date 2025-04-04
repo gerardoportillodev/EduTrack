@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Examen de {{ subject }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">Examen de {{ subject }}</h2>
+        <div class="alert alert-info">
+            <strong>Instrucciones:</strong> Responde todas las preguntas. Cada pregunta tiene una única respuesta correcta.
+        </div>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            {% for question in questions %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Pregunta {{ loop.index }}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ question.question_text }}</h5>
+                        
+                        <div class="form-group">
+                            {% set field = form['question_' + question.id|string] %}
+                            {% for subfield in field %}
+                                <div class="form-check">
+                                    {{ subfield(class="form-check-input") }}
+                                    {{ subfield.label(class="form-check-label") }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <div class="form-group mt-4">
+                {{ form.submit(class="btn btn-primary btn-lg") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

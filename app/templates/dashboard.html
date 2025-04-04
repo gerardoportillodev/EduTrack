@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Bienvenido, {{ current_user.username }}</h2>
+        <p>Desde aquí puedes realizar nuevos exámenes o ver tus resultados anteriores.</p>
+        
+        <a href="{{ url_for('main.select_subject') }}" class="btn btn-success mb-4">Realizar nuevo examen</a>
+        
+        <h3 class="mt-4">Tus exámenes recientes</h3>
+        {% if exams %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Materia</th>
+                            <th>Calificación</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in exams %}
+                            <tr>
+                                <td>{{ exam.subject.capitalize() }}</td>
+                                <td>{{ "%.1f"|format(exam.score) }}%</td>
+                                <td>{{ exam.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>
+                                    <a href="{{ url_for('main.exam_results', exam_id=exam.id) }}" class="btn btn-sm btn-info">Ver detalles</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                Aún no has realizado ningún examen.
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Estadísticas
+            </div>
+            <div class="card-body">
+                {% if exams %}
+                    <canvas id="statsChart" width="100%" height="100%"></canvas>
+                  
+                {% else %}
+                    <p>No hay datos suficientes para mostrar estadísticas.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<script>
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    const statsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Lenguaje', 'Matemáticas', 'Física'],
+            datasets: [{
+                label: 'Promedio de calificaciones',
+                data: [
+                    {{ stats.by_subject.lenguaje.average }},
+                    {{ stats.by_subject.fisica.average }},
+                    {{ stats.by_subject.matematicas.average }},
+
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(75, 192, 192, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

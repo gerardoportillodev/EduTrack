@@ -1,0 +1,37 @@
+body {
+    /* padding-top: 56px;
+     */
+     height: 100vh;
+}
+
+.jumbotron {
+    background-color: #f8f9fa;
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0.3rem;
+}
+
+.progress {
+    margin-top: 10px;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.alert {
+    margin-bottom: 1rem;
+}
+
+.table {
+    margin-top: 1rem;
+}
+
+.container {
+    height: 100%;
+}

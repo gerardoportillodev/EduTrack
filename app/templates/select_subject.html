@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Seleccionar Materia{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">Selecciona una materia para el examen</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Lenguaje</h3>
+                        <p class="card-text">Examen de gramática, literatura y comprensión lectora.</p>
+                        <a href="{{ url_for('main.start_exam', subject='lenguaje') }}" class="btn btn-primary">Seleccionar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Matemáticas</h3>
+                        <p class="card-text">Examen de álgebra, geometría y cálculo básico.</p>
+                        <a href="{{ url_for('main.start_exam', subject='matematicas') }}" class="btn btn-primary">Seleccionar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Física</h3>
+                        <p class="card-text">Examen de mecánica, termodinámica y electromagnetismo.</p>
+                        <a href="{{ url_for('main.start_exam', subject='fisica') }}" class="btn btn-primary">Seleccionar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
