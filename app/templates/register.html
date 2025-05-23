@@ -68,6 +68,20 @@
                                 </div>
                             {% endif %}
                         </div>
+                        <div class="mb-3">
+                            {{ form.parent_email.label(class="form-label fw-semibold") }}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope-fill"></i></span>
+                                {{ form.parent_email(class="form-control", placeholder="Correo del padre/madre o estudiante") }}
+                            </div>
+                            {% if form.parent_email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.parent_email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                         <div class="d-grid mb-3">
                             {{ form.submit(class="btn btn-success btn-lg rounded-pill shadow-sm fw-semibold") }}
                         </div>

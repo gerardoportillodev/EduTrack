@@ -30,7 +30,11 @@
                             </div>
                             <div class="text-center">
                                 <span class="d-block fs-3 fw-bold text-primary">
-                                    {{ "%.1f"|format((correct_count/(correct_count+incorrect_count))*100) }}%
+                                    {% if correct_count + incorrect_count > 0 %}
+                                        {{ "%.1f"|format((correct_count/(correct_count+incorrect_count))*100) }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
                                 </span>
                                 <span class="text-muted">Puntaje</span>
                             </div>
@@ -39,11 +43,15 @@
                 </div>
                 <div class="progress mt-2" style="height: 28px; border-radius: 1.5rem;">
                     <div class="progress-bar bg-gradient bg-success fw-semibold" role="progressbar" 
-                         style="width: {{ (correct_count/(correct_count+incorrect_count))*100 }}%; border-radius: 1.5rem;"
+                         style="width: {% if correct_count + incorrect_count > 0 %}{{ (correct_count/(correct_count+incorrect_count))*100 }}{% else %}0{% endif %}%; border-radius: 1.5rem;"
                          aria-valuenow="{{ correct_count }}" 
                          aria-valuemin="0" 
                          aria-valuemax="{{ correct_count+incorrect_count }}">
-                        {{ "%.1f"|format((correct_count/(correct_count+incorrect_count))*100) }}%
+                        {% if correct_count + incorrect_count > 0 %}
+                            {{ "%.1f"|format((correct_count/(correct_count+incorrect_count))*100) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
                     </div>
                 </div>
             </div>

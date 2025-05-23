@@ -16,12 +16,16 @@
                         <li class="list-group-item">
                             <strong>Usuario:</strong> {{ user.username }}
                         </li>
+                        <li class="list-group-item">
+                            <strong>Correo registrado:</strong> {{ user.parent_email }}
+                        </li>
                         <!-- Agrega más campos si tienes más información del usuario -->
                     </ul>
                     <div class="text-center">
                         <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary rounded-pill">
                             <i class="bi bi-arrow-left"></i> Volver al Dashboard
                         </a>
+                        <a href="{{ url_for('main.test_mail') }}" class="btn btn-primary mt-3">Enviar correo de prueba</a>
                     </div>
                 </div>
             </div>
