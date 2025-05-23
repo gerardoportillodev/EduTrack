@@ -4,40 +4,44 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <h2 class="mb-4">Examen de {{ subject }}</h2>
-        <div class="alert alert-info">
-            <strong>Instrucciones:</strong> Responde todas las preguntas. Cada pregunta tiene una única respuesta correcta.
-        </div>
-        
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            
-            {% for question in questions %}
-                <div class="card mb-3">
-                    <div class="card-header">
-                        Pregunta {{ loop.index }}
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ question.question_text }}</h5>
-                        
-                        <div class="form-group">
-                            {% set field = form['question_' + question.id|string] %}
-                            {% for subfield in field %}
-                                <div class="form-check">
-                                    {{ subfield(class="form-check-input") }}
-                                    {{ subfield.label(class="form-check-label") }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-            
-            <div class="form-group mt-4">
-                {{ form.submit(class="btn btn-primary btn-lg") }}
+    <div class="col-lg-8 col-xl-7">
+        <div class="card shadow-sm rounded-4 border-0 mb-4">
+            <div class="card-header bg-gradient bg-primary text-white rounded-top-4 d-flex align-items-center">
+                <i class="bi bi-journal-text me-2 fs-4"></i>
+                <h2 class="mb-0 fs-4">Examen de {{ subject }}</h2>
             </div>
-        </form>
+            <div class="card-body">
+                <div class="alert alert-info shadow-sm mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Instrucciones:</strong> Responde todas las preguntas. Cada pregunta tiene una única respuesta correcta.
+                </div>
+                <form method="POST" autocomplete="off">
+                    {{ form.hidden_tag() }}
+                    {% for question in questions %}
+                        <div class="card mb-4 border-0 shadow-sm rounded-4">
+                            <div class="card-header bg-light rounded-top-4 fw-semibold">
+                                <i class="bi bi-question-circle me-2 text-primary"></i>Pregunta {{ loop.index }}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">{{ question.question_text }}</h5>
+                                <div class="form-group">
+                                    {% set field = form['question_' + question.id|string] %}
+                                    {% for subfield in field %}
+                                        <div class="form-check mb-2">
+                                            {{ subfield(class="form-check-input") }}
+                                            {{ subfield.label(class="form-check-label") }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid mt-4">
+                        {{ form.submit(class="btn btn-success btn-lg rounded-pill shadow-sm fw-semibold") }}
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

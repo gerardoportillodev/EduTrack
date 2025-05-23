@@ -4,33 +4,62 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <h2 class="mb-4">Selecciona una materia para el examen</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h3 class="card-title">Lenguaje</h3>
-                        <p class="card-text">Examen de gramática, literatura y comprensión lectora.</p>
-                        <a href="{{ url_for('main.start_exam', subject='lenguaje') }}" class="btn btn-primary">Seleccionar</a>
+    <div class="col-md-10 col-lg-8">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">
+                <i class="bi bi-journal-text text-primary me-2"></i>
+                Selecciona una materia para el examen
+            </h2>
+            <p class="text-muted mb-0">
+                Elige la materia en la que deseas evaluar tus conocimientos. Cada examen está diseñado para medir tus habilidades en áreas clave.
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <div class="mb-3">
+                            <span class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width:56px; height:56px;">
+                                <i class="bi bi-book fs-2"></i>
+                            </span>
+                        </div>
+                        <h4 class="card-title fw-bold mb-2">Lenguaje</h4>
+                        <p class="card-text text-muted mb-4">Examen de gramática, literatura y comprensión lectora.</p>
+                        <a href="{{ url_for('main.start_exam', subject='lenguaje') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Seleccionar
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h3 class="card-title">Matemáticas</h3>
-                        <p class="card-text">Examen de álgebra, geometría y cálculo básico.</p>
-                        <a href="{{ url_for('main.start_exam', subject='matematicas') }}" class="btn btn-primary">Seleccionar</a>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <div class="mb-3">
+                            <span class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width:56px; height:56px;">
+                                <i class="bi bi-calculator fs-2"></i>
+                            </span>
+                        </div>
+                        <h4 class="card-title fw-bold mb-2">Matemáticas</h4>
+                        <p class="card-text text-muted mb-4">Examen de álgebra, geometría y cálculo básico.</p>
+                        <a href="{{ url_for('main.start_exam', subject='matematicas') }}" class="btn btn-success btn-lg rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Seleccionar
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h3 class="card-title">Física</h3>
-                        <p class="card-text">Examen de mecánica, termodinámica y electromagnetismo.</p>
-                        <a href="{{ url_for('main.start_exam', subject='fisica') }}" class="btn btn-primary">Seleccionar</a>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body text-center py-4">
+                        <div class="mb-3">
+                            <span class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width:56px; height:56px;">
+                                <i class="bi bi-lightning-charge fs-2"></i>
+                            </span>
+                        </div>
+                        <h4 class="card-title fw-bold mb-2">Física</h4>
+                        <p class="card-text text-muted mb-4">Examen de mecánica, termodinámica y electromagnetismo.</p>
+                        <a href="{{ url_for('main.start_exam', subject='fisica') }}" class="btn btn-danger btn-lg rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Seleccionar
+                        </a>
                     </div>
                 </div>
             </div>

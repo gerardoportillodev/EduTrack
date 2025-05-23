@@ -3,99 +3,367 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <h2>Bienvenido, {{ current_user.username }}</h2>
-        <p>Desde aquí puedes realizar nuevos exámenes o ver tus resultados anteriores.</p>
-        
-        <a href="{{ url_for('main.select_subject') }}" class="btn btn-success mb-4">Realizar nuevo examen</a>
-        
-        <h3 class="mt-4">Tus exámenes recientes</h3>
-        {% if exams %}
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Materia</th>
-                            <th>Calificación</th>
-                            <th>Fecha</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for exam in exams %}
-                            <tr>
-                                <td>{{ exam.subject.capitalize() }}</td>
-                                <td>{{ "%.1f"|format(exam.score) }}%</td>
-                                <td>{{ exam.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
-                                <td>
-                                    <a href="{{ url_for('main.exam_results', exam_id=exam.id) }}" class="btn btn-sm btn-info">Ver detalles</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-none d-md-block bg-white sidebar shadow-sm rounded-4 p-0" style="min-height: 100vh;">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold text-primary" href="{{ url_for('main.dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.select_subject') }}">
+                            <i class="bi bi-plus-circle me-2"></i>Nuevo Examen
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.exam_history') }}">
+                            <i class="bi bi-clock-history me-2"></i>Historial Completo
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.profile') }}">
+                            <i class="bi bi-person me-2"></i>Mi Perfil
+                        </a>
+                    </li>
+                </ul>
+                
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Progreso General</span>
+                </h6>
+                <div class="px-3 mb-3">
+                    <div class="progress mb-2" style="height: 20px; border-radius: 1rem;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ stats.overall_average|default(0) }}%; border-radius: 1rem;"
+                             aria-valuenow="{{ stats.overall_average|default(0) }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ "%.1f"|format(stats.overall_average|default(0)) }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">Promedio general</small>
+                </div>
             </div>
-        {% else %}
-            <div class="alert alert-info">
-                Aún no has realizado ningún examen.
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Bienvenido, {{ current_user.username }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{{ url_for('main.select_subject') }}" class="btn btn-success shadow-sm rounded-pill">
+                        <i class="bi bi-plus-circle me-1"></i> Nuevo Examen
+                    </a>
+                </div>
             </div>
-        {% endif %}
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                Estadísticas
+
+            <!-- Stats Cards -->
+            <div class="row mb-4 g-3">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary mb-3 shadow-sm rounded-4 border-0 h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">Exámenes Realizados</h5>
+                                <div class="text-white-50 small mb-2">Total completados</div>
+                                <h2 class="mb-0">{{ stats.total_exams|default(0) }}</h2>
+                            </div>
+                            <span class="ms-auto rounded-circle bg-white bg-opacity-25 p-3">
+                                <i class="bi bi-journal-check display-5"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-success mb-3 shadow-sm rounded-4 border-0 h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">Promedio General</h5>
+                                <div class="text-white-50 small mb-2">Rendimiento global</div>
+                                <h2 class="mb-0">{{ "%.1f"|format(stats.overall_average|default(0)) }}%</h2>
+                            </div>
+                            <span class="ms-auto rounded-circle bg-white bg-opacity-25 p-3">
+                                <i class="bi bi-graph-up display-5"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-info mb-3 shadow-sm rounded-4 border-0 h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">Mejor Materia</h5>
+                                <div class="text-white-50 small mb-2">Desempeño destacado</div>
+                                <h2 class="mb-0">{{ stats.best_subject.name|default('N/A') }} ({{ "%.1f"|format(stats.best_subject.average|default(0)) }}%)</h2>
+                            </div>
+                            <span class="ms-auto rounded-circle bg-white bg-opacity-25 p-3">
+                                <i class="bi bi-award display-5"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                {% if exams %}
-                    <canvas id="statsChart" width="100%" height="100%"></canvas>
-                  
-                {% else %}
-                    <p>No hay datos suficientes para mostrar estadísticas.</p>
-                {% endif %}
+
+            <div class="row g-3">
+                <!-- Exámenes Recientes -->
+                <div class="col-lg-8">
+                    <div class="card mb-4 shadow-sm rounded-4 border-0">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 rounded-top-4">
+                            <h5 class="mb-0">Tus exámenes recientes</h5>
+                            <a href="{{ url_for('main.exam_history') }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver todos</a>
+                        </div>
+                        <div class="card-body">
+                            {% if exams %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Materia</th>
+                                                <th>Calificación</th>
+                                                <th>Fecha</th>
+                                                <th>Estado</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for exam in exams %}
+                                                <tr>
+                                                    <td>
+                                                        {% set subj = exam.subject.lower() %}
+                                                        <span class="badge rounded-pill 
+                                                            {% if subj in ['matematicas', 'matemáticas'] %}bg-primary
+                                                            {% elif subj == 'lenguaje' %}bg-success
+                                                            {% elif subj in ['fisica', 'física'] %}bg-danger
+                                                            {% else %}bg-secondary
+                                                            {% endif %} me-2">
+                                                            {% if subj in ['matematicas', 'matemáticas'] %}
+                                                                <i class="bi bi-calculator"></i>
+                                                            {% elif subj == 'lenguaje' %}
+                                                                <i class="bi bi-book"></i>
+                                                            {% elif subj in ['fisica', 'física'] %}
+                                                                <i class="bi bi-lightning-charge"></i>
+                                                            {% else %}
+                                                                <i class="bi bi-question-circle"></i>
+                                                            {% endif %}
+                                                        </span>
+                                                        {{ exam.subject.capitalize() }}
+                                                    </td>
+                                                    <td>
+                                                        <div class="progress" style="height: 20px; border-radius: 1rem;">
+                                                            <div class="progress-bar 
+                                                                {% if exam.score >= 70 %}bg-success
+                                                                {% elif exam.score >= 50 %}bg-warning
+                                                                {% else %}bg-danger
+                                                                {% endif %}" 
+                                                                role="progressbar" 
+                                                                style="width: {{ exam.score }}%; border-radius: 1rem;"
+                                                                aria-valuenow="{{ exam.score }}" 
+                                                                aria-valuemin="0" 
+                                                                aria-valuemax="100">
+                                                                {{ "%.1f"|format(exam.score) }}%
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ exam.timestamp.strftime('%d/%m/%Y') }}</td>
+                                                    <td>
+                                                        {% if exam.score >= 70 %}
+                                                            <span class="badge bg-success">Excelente</span>
+                                                        {% elif exam.score >= 50 %}
+                                                            <span class="badge bg-warning text-dark">Aceptable</span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger">Necesita mejorar</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <a href="{{ url_for('main.exam_results', exam_id=exam.id) }}" 
+                                                               class="btn btn-outline-primary rounded-circle" 
+                                                               data-bs-toggle="tooltip" 
+                                                               title="Ver detalles">
+                                                                <i class="bi bi-eye"></i>
+                                                            </a>
+                                                            <a href="{{ url_for('main.compare_exam', exam_id=exam.id) }}" 
+                                                               class="btn btn-outline-secondary rounded-circle" 
+                                                               data-bs-toggle="tooltip" 
+                                                               title="Comparar">
+                                                                <i class="bi bi-graph-up"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="bi bi-journal-x display-4 text-muted mb-3"></i>
+                                    <h5 class="text-muted">Aún no has realizado ningún examen</h5>
+                                    <p class="text-muted">Comienza realizando tu primer examen para ver tus resultados aquí</p>
+                                    <a href="{{ url_for('main.select_subject') }}" class="btn btn-primary mt-2 rounded-pill">
+                                        <i class="bi bi-plus-circle me-1"></i> Realizar Examen
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos y Estadísticas -->
+                <div class="col-lg-4">
+                    <div class="card mb-4 shadow-sm rounded-4 border-0">
+                        <div class="card-header bg-white border-0 rounded-top-4">
+                            <h5 class="mb-0">Rendimiento por Materia</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="subjectChart" height="250"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm rounded-4 border-0 mt-4">
+                        <div class="card-header bg-white border-0 rounded-top-4">
+                            <h5 class="mb-0">Evolución del Rendimiento por Materia</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="evolucionChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
 <script>
-    const ctx = document.getElementById('statsChart').getContext('2d');
-    const statsChart = new Chart(ctx, {
+    // Activar tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+
+    // Gráfico de materias (barras verticales)
+    const subjectCtx = document.getElementById('subjectChart').getContext('2d');
+    const subjectChart = new Chart(subjectCtx, {
         type: 'bar',
         data: {
-            labels: ['Lenguaje','Física','Matemáticas'],
+            labels: ['Matemáticas', 'Lenguaje', 'Física'],
             datasets: [{
-                label: 'Promedio de calificaciones',
+                label: 'Promedio (%)',
                 data: [
-                    {{ stats.by_subject.lenguaje.average }},
-                    {{ stats.by_subject.fisica.average }},
-                    {{ stats.by_subject.matematicas.average }},
-
+                    {{ stats.by_subject.matematicas.average|default(0) }},
+                    {{ stats.by_subject.lenguaje.average|default(0) }},
+                    {{ stats.by_subject.fisica.average|default(0) }}
                 ],
                 backgroundColor: [
-                    'rgba(54, 162, 235, 0.5)',
-                    'rgba(255, 99, 132, 0.5)',
-                    'rgba(75, 192, 192, 0.5)'
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(255, 99, 132, 0.7)'
                 ],
                 borderColor: [
                     'rgba(54, 162, 235, 1)',
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(75, 192, 192, 1)'
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
                 ],
-                borderWidth: 1
+                borderWidth: 2
             }]
         },
         options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}%`;
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 100
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
                 }
-            }
+            },
+            maintainAspectRatio: false
+        }
+    });
+
+    // Gráfico de evolución por materia
+    const evolucionCtx = document.getElementById('evolucionChart').getContext('2d');
+    const evolucionChart = new Chart(evolucionCtx, {
+        type: 'line',
+        data: {
+            labels: {{ evolucion_labels|tojson }},
+            datasets: [
+                {
+                    label: 'Matemáticas',
+                    data: {{ evolucion_matematicas|tojson }},
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    tension: 0.3,
+                    spanGaps: true
+                },
+                {
+                    label: 'Lenguaje',
+                    data: {{ evolucion_lenguaje|tojson }},
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    tension: 0.3,
+                    spanGaps: true
+                },
+                {
+                    label: 'Física',
+                    data: {{ evolucion_fisica|tojson }},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    tension: 0.3,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw !== null ? context.raw + '%' : 'Sin dato'}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            maintainAspectRatio: false
         }
     });
 </script>

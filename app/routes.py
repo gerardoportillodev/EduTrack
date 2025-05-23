@@ -7,6 +7,9 @@ from app.forms import LoginForm, RegistrationForm, ExamForm
 from wtforms import RadioField, validators
 from wtforms.validators import DataRequired
 import random
+from datetime import datetime, timedelta
+from collections import defaultdict
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -60,24 +63,56 @@ def register():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    exams = current_user.exams.order_by(Exam.timestamp.desc()).all()
-    
-    # Calcular estadísticas
-    subjects = ['lenguaje', 'matematicas', 'fisica']
+    exams = Exam.query.filter_by(user_id=current_user.id).order_by(Exam.timestamp.asc()).all()
+    subjects = ['matematicas', 'lenguaje', 'fisica']
+
+    # Calcula promedios por materia
+    by_subject = {}
+    for s in subjects:
+        subject_exams = [e for e in exams if e.subject == s]
+        avg = sum(e.score for e in subject_exams) / len(subject_exams) if subject_exams else 0
+        by_subject[s] = {
+            'average': avg
+        }
+
+    # Mejor materia
+    best_subject = max(by_subject.items(), key=lambda x: x[1]['average']) if by_subject else ('N/A', {'average': 0})
+
+    # Stats generales
     stats = {
         'total_exams': len(exams),
-        'average_score': sum(exam.score for exam in exams) / len(exams) if exams else 0,
-        'by_subject': {
-            subject: {
-                'count': len([e for e in exams if e.subject == subject]),
-                'average': sum(e.score for e in exams if e.subject == subject) / 
-                          len([e for e in exams if e.subject == subject]) if 
-                          len([e for e in exams if e.subject == subject]) > 0 else 0
-            } for subject in subjects
+        'overall_average': sum(e.score for e in exams) / len(exams) if exams else 0,
+        'by_subject': by_subject,
+        'best_subject': {
+            'name': best_subject[0].capitalize(),
+            'average': best_subject[1]['average']
         }
     }
-    
-    return render_template('dashboard.html', exams=exams, stats=stats)
+
+    # --- Evolución del rendimiento por materia ---
+    evolucion_labels = []
+    evolucion_dict = {s: [] for s in subjects}
+
+    for exam in exams:
+        fecha = exam.timestamp.strftime('%d/%m/%Y')
+        if fecha not in evolucion_labels:
+            evolucion_labels.append(fecha)
+        # Para cada materia, agrega el score si es de esa materia, si no, None
+        for s in subjects:
+            if exam.subject == s:
+                evolucion_dict[s].append(exam.score)
+            else:
+                evolucion_dict[s].append(None)
+
+    return render_template(
+        "dashboard.html",
+        stats=stats,
+        exams=exams,
+        evolucion_labels=evolucion_labels,
+        evolucion_matematicas=evolucion_dict['matematicas'],
+        evolucion_lenguaje=evolucion_dict['lenguaje'],
+        evolucion_fisica=evolucion_dict['fisica'],
+    )
 
 @main_bp.route('/select_subject')
 @login_required
@@ -150,25 +185,30 @@ def start_exam(subject):
 @login_required
 def exam_results(exam_id):
     exam = Exam.query.get_or_404(exam_id)
-    if exam.user_id != current_user.id:
-        abort(403)
-    
-    answers = (db.session.query(Answer, Question)
-               .join(Question)
-               .filter(Answer.exam_id == exam_id)
-               .order_by(Question.id)
-               .all())
-    
-    # Calcular estadísticas del examen
-    correct_count = sum(1 for answer, _ in answers if answer.is_correct)
-    incorrect_count = len(answers) - correct_count
-        
-    answer_list = [answer for answer, question in answers]  # Extract only Answer objects
-
+    answers = Answer.query.filter_by(exam_id=exam.id).all()
+    results = []
+    correct_count = 0
+    incorrect_count = 0
+    for answer in answers:
+        question = Question.query.get(answer.question_id)
+        if answer.is_correct:
+            correct_count += 1
+        else:
+            incorrect_count += 1
+        # feedback tradicional según la opción seleccionada
+        feedback = getattr(question, f'feedback_{answer.selected_option}', '')
+        results.append({
+            'question': question,
+            'question_text': question.question_text,
+            'user_answer': question.__dict__.get(f'option_{answer.selected_option}', ''),
+            'correct_answer': question.__dict__.get(f'option_{question.correct_answer}', ''),
+            'is_correct': answer.is_correct,
+            'feedback': feedback
+        })
     return render_template(
         'exam_results.html',
         exam=exam,
-        answers=answer_list,  # Pass only the Answer objects
+        answers=results,
         correct_count=correct_count,
         incorrect_count=incorrect_count
     )
@@ -177,6 +217,30 @@ def exam_results(exam_id):
 @login_required
 def profile():
     return render_template('profile.html', user=current_user)
+
+
+@main_bp.route('/exam_history')
+@login_required
+def exam_history():
+    exams = Exam.query.filter_by(user_id=current_user.id).order_by(Exam.timestamp.desc()).all()
+    return render_template('exam_history.html', exams=exams)
+
+@main_bp.route('/compare_exam/<int:exam_id>')
+@login_required
+def compare_exam(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    user_exams = Exam.query.filter_by(user_id=current_user.id).all()
+    subject_exams = [e for e in user_exams if e.subject == exam.subject]
+
+    overall_average = sum(e.score for e in user_exams) / len(user_exams) if user_exams else 0
+    subject_average = sum(e.score for e in subject_exams) / len(subject_exams) if subject_exams else 0
+
+    return render_template(
+        'compare_exam.html',
+        exam=exam,
+        overall_average=overall_average,
+        subject_average=subject_average
+    )
 
 def generate_feedback(question, selected_option, is_correct):
     if is_correct:

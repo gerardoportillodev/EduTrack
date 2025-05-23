@@ -1,39 +1,86 @@
 {% extends "base.html" %}
 
-{% block title %}Registro{% endblock %}
+{% block title %}Registro - EDUTrack{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="mb-4">Registrarse</h2>
-        <form method="POST" action="{{ url_for('main.register') }}">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control") }}
-                {% for error in form.username.errors %}
-                    <small class="text-danger">{{ error }}</small>
-                {% endfor %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient bg-primary text-white text-center rounded-top-4 py-4">
+                    <h2 class="mb-0 fw-bold">Crear una cuenta</h2>
+                    <p class="mb-0 small text-white-50">Completa el formulario para registrarte</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('main.register') }}" novalidate autocomplete="off">
+                        {{ form.hidden_tag() }}
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label fw-semibold") }}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                                {{ form.username(class="form-control", placeholder="Usuario") }}
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label fw-semibold") }}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                                {{ form.password(class="form-control", placeholder="Contraseña") }}
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.password2.label(class="form-label fw-semibold") }}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                                {{ form.password2(class="form-control", placeholder="Repite la contraseña") }}
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password2.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="d-grid mb-3">
+                            {{ form.submit(class="btn btn-success btn-lg rounded-pill shadow-sm fw-semibold") }}
+                        </div>
+                    </form>
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="mb-2">¿Ya tienes una cuenta?
+                            <a href="{{ url_for('main.login') }}" class="fw-semibold text-primary text-decoration-none">Inicia sesión aquí</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control") }}
-                {% for error in form.password.errors %}
-                    <small class="text-danger">{{ error }}</small>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                {{ form.password2.label(class="form-label") }}
-                {{ form.password2(class="form-control") }}
-                {% for error in form.password2.errors %}
-                    <small class="text-danger">{{ error }}</small>
-                {% endfor %}
-            </div>
-            <div class="form-group mt-3">
-                {{ form.submit(class="btn btn-primary") }}
-            </div>
-        </form>
-        <p class="mt-3">¿Ya tienes una cuenta? <a href="{{ url_for('main.login') }}">Inicia sesión aquí</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}

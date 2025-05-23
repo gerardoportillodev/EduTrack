@@ -3,15 +3,29 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-<div class="jumbotron">
-    <h1 class="display-4">Bienvenido a EDUTrack</h1>
-    <p class="lead">Sistema de evaluación para educación secundaria en las materias de Lenguaje, Matemáticas y Física.</p>
-    <hr class="my-4">
-    <p>Realiza exámenes y recibe feedback inmediato para mejorar tu aprendizaje.</p>
-    {% if not current_user.is_authenticated %}
-        <a class="btn btn-primary btn-lg" href="{{ url_for('main.register') }}" role="button">Regístrate ahora</a>
-    {% else %}
-        <a class="btn btn-success btn-lg" href="{{ url_for('main.select_subject') }}" role="button">Realizar un examen</a>
-    {% endif %}
-</div>
+<main class="d-flex align-items-center justify-content-center" style="min-height: 80vh; background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);">
+    <section class="card shadow-lg border-0" style="max-width: 500px; width: 100%; padding: 2.5rem 2rem; border-radius: 1.25rem; background: #fff;">
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold" style="color: #2a4365;">Bienvenido a <span style="color: #3182ce;">EDUTrack</span></h1>
+        </div>
+        <p class="lead text-secondary text-center mb-3">
+            Sistema de evaluación para educación secundaria en las materias de <strong>Lenguaje</strong>, <strong>Matemáticas</strong> y <strong>Física</strong>.
+        </p>
+        <hr>
+        <p class="text-center mb-4" style="font-size: 1.05rem;">
+            Realiza exámenes y recibe feedback inmediato para mejorar tu aprendizaje.
+        </p>
+        <div class="d-flex justify-content-center">
+            {% if not current_user.is_authenticated %}
+                <a class="btn btn-primary btn-lg px-4 shadow-sm" href="{{ url_for('main.register') }}" role="button" style="border-radius: 2rem; font-weight: 500;">
+                    <i class="bi bi-person-plus"></i> Regístrate ahora
+                </a>
+            {% else %}
+                <a class="btn btn-success btn-lg px-4 shadow-sm" href="{{ url_for('main.select_subject') }}" role="button" style="border-radius: 2rem; font-weight: 500;">
+                    <i class="bi bi-journal-check"></i> Realizar un examen
+                </a>
+            {% endif %}
+        </div>
+    </section>
+</main>
 {% endblock %}

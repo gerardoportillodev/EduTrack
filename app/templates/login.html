@@ -3,37 +3,35 @@
 {% block title %}Iniciar Sesión - EDUTrack{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3 class="mb-0">Iniciar Sesión</h3>
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient bg-primary text-white text-center rounded-top-4 py-4">
+                    <i class="bi bi-book fs-1 mb-2 text-white"></i>
+                    <h2 class="mb-0 fw-bold">Bienvenido a EDUTrack</h2>
+                    <p class="mb-0 small text-white-50">Por favor, inicia sesión para continuar</p>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ url_for('main.login') }}" novalidate>
+                    <form method="POST" action="{{ url_for('main.login') }}" novalidate autocomplete="off">
                         {{ form.hidden_tag() }}
-                        
-                        <!-- Mensajes Flash -->
+
                         {% with messages = get_flashed_messages(with_categories=true) %}
                             {% if messages %}
                                 {% for category, message in messages %}
-                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
                                         {{ message }}
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                     </div>
                                 {% endfor %}
                             {% endif %}
                         {% endwith %}
-                        
-                        <!-- Campo Usuario -->
+
                         <div class="mb-3">
-                            {{ form.username.label(class="form-label") }}
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-person-fill"></i>
-                                </span>
-                                {{ form.username(class="form-control", placeholder="Ingresa tu usuario") }}
+                            {{ form.username.label(class="form-label fw-semibold") }}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                                {{ form.username(class="form-control", placeholder="Usuario", autofocus=True) }}
                             </div>
                             {% if form.username.errors %}
                                 <div class="invalid-feedback d-block">
@@ -43,15 +41,12 @@
                                 </div>
                             {% endif %}
                         </div>
-                        
-                        <!-- Campo Contraseña -->
+
                         <div class="mb-3">
-                            {{ form.password.label(class="form-label") }}
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-lock-fill"></i>
-                                </span>
-                                {{ form.password(class="form-control", placeholder="Ingresa tu contraseña") }}
+                            {{ form.password.label(class="form-label fw-semibold") }}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                                {{ form.password(class="form-control", placeholder="Contraseña") }}
                             </div>
                             {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">
@@ -61,25 +56,22 @@
                                 </div>
                             {% endif %}
                         </div>
-                        
-                        <!-- Recordar sesión -->
+
                         <div class="mb-3 form-check">
                             {{ form.remember_me(class="form-check-input") }}
                             {{ form.remember_me.label(class="form-check-label") }}
                         </div>
-                        
-                        <!-- Botón de envío -->
-                        <div class="d-grid gap-2">
-                            {{ form.submit(class="btn btn-primary btn-lg") }}
+
+                        <div class="d-grid mb-3">
+                            {{ form.submit(class="btn btn-success btn-lg rounded-pill shadow-sm fw-semibold") }}
                         </div>
                     </form>
-                    
+
                     <hr class="my-4">
-                    
-                    <!-- Enlaces adicionales -->
+
                     <div class="text-center">
-                        <p class="mb-2">¿No tienes una cuenta? 
-                            <a href="{{ url_for('main.register') }}" class="text-decoration-none">Regístrate aquí</a>
+                        <p class="mb-2">¿No tienes una cuenta?
+                            <a href="{{ url_for('main.register') }}" class="fw-semibold text-primary text-decoration-none">Regístrate aquí</a>
                         </p>
                         <!-- <p class="mb-0">
                             <a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
@@ -93,27 +85,18 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Validación de formulario -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form');
-    
     forms.forEach(form => {
         form.addEventListener('submit', function(event) {
             if (!form.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();
             }
-            
             form.classList.add('was-validated');
         }, false);
     });
 });
 </script>
 {% endblock %}
-<div class="form-group">
-    <div class="form-check">
-        {{ form.remember_me(class="form-check-input") }}
-        {{ form.remember_me.label(class="form-check-label") }}
-    </div>
-</div>
